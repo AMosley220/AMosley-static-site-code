@@ -26,5 +26,13 @@ jobs:
             - name: Build
               run: hugo
 
-            - name: List all directories and files recursively
-              run: find . -type d
+            - name: rsync deployments
+              uses: burnett01/rsync-deployments@v9
+              with:
+                switches: -avzr --delete
+                path: public/
+                remote_path: ${{ secrets.REMOTE_PATH }} # ex: /var/www/html/
+                remote_host: ${{ secrets.REMOTE_HOST }} # ex: example.com
+                remote_port: ${{ secrets.REMOTE_PORT }} # ex: 22
+                remote_user: ${{ secrets.REMOTE_USER }} # ex: ubuntu
+                remote_key: ${{ secrets.HETZNER_SSH_KEY }}
