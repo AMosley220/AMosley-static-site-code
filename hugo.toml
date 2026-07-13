@@ -15,7 +15,7 @@ style = "github-dark"
   info = "Systems Administrator"
   description = "Anthony Mosley Jr's Personal Site"
   keywords = "blog,developer,personal"
-  avatarurl = "images/avatar.png"
+  avatarurl = "./assets/images/avatar.png"
   #gravatar = "amosley220@outlook.com"
 
   faviconSVG = "/img/favicon.svg"
@@ -45,18 +45,24 @@ style = "github-dark"
   icon = "fa-brands fa-github fa-2x"
   weight = 1
   url = "https://github.com/AMosley220/"
-[[params.social]]
-  name = "BlueSky"
-  icon = "fa-brands fa-bluesky fa-2x"
-  weight = 3
-  url = "https://bsky.app/profile/amosley220.bsky.social"
 
 # Menu links
 [[menu.main]]
   name = "Blog"
   weight = 1
   url  = "posts/"
+
 [[menu.main]]
   name = "About"
   weight = 2
   url = "about/"
+
+[[menu.main]]
+  name = "Projects"
+  weight = 3
+  url = "projects/"
+
+[[menu.main]]
+  name = "Contact me"
+  weight = 5
+  url = "contact/"
