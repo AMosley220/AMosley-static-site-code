@@ -13,6 +13,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: dev
+          path: 'static-site-repo'
 
       # Step 2: Check out the target repository into a subdirectory
       - name: Checkout Destination Repo
@@ -20,16 +21,7 @@ jobs:
         with:
           repository: 'AMosley220/amosley220.github.io' # Replace with target repo details
           token: ${{ secrets.SYNC_TOKEN }}
-          path: 'destination-folder' # Clones the target repo into this folder
-
-      # - name: Setup Hugo
-      #   uses: peaceiris/actions-hugo@v3
-      #   with:
-      #     hugo-version: '0.164.0'
-      #     extended: true
-
-      # - name: Build
-      #   run: hugo
+          path: 'github-pages-repo' # Clones the target repo into this folder
 
       # Step 3: Copy/generate files and push
       - name: Copy files and Push to Destination
@@ -38,19 +30,19 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          # 2. Example: Copy a build folder or specific file from source to destination-folder
+          # 2. Copy static-site-repo to github-pages-repo and commit it to main
           # Modify this line based on what files you need to copy
           ls -l
-        # cp -r ./ destination-folder/
+          cp -r ./static-site-repo ./github-pages-repo/
 
         # # 3. Navigate to destination folder and push
-        # cd destination-folder
-        # git add .
+          cd github-pages-repo
+          git add .
 
-        # # 4. Only commit and push if there are changes to avoid workflow errors
-        # if ! git diff-index --quiet HEAD; then
-        #   git commit -m "Automated sync from source repo: ${{ github.sha }}"
-        #   git push origin main
-        # else
-        #   echo "No changes to commit"
-        # fi
+        # 4. Only commit and push if there are changes to avoid workflow errors
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "Automated sync from source repo: ${{ github.sha }}"
+            git push origin main
+          else
+            echo "No changes to commit"
+          fi
