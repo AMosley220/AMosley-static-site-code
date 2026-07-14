@@ -29,7 +29,7 @@ jobs:
               HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
 
           - name: Add current runner IP to hcloud firewall
-            run: hcloud firewall add-rule --direction in --source-ips ${{ steps.ip.outputs.ipv4 }} --protocol tcp --port 2222 static-site-firewall
+            run: hcloud firewall add-rule --direction in --source-ips ${{ steps.ip.outputs.ipv4 }}/24 --protocol tcp --port 2222 static-site-firewall
             env:
               HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
 
@@ -39,7 +39,7 @@ jobs:
               HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
 
           - name: Remove firewall rule
-            run: hcloud firewall delete-rule --direction in --source-ips ${{ steps.ip.outputs.ipv4 }} --protocol tcp --port 2222 static-site-firewall
+            run: hcloud firewall delete-rule --direction in --source-ips ${{ steps.ip.outputs.ipv4 }}/24 --protocol tcp --port 2222 static-site-firewall
             env:
               HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
         #  - name: Execute git clone on Remote Server
