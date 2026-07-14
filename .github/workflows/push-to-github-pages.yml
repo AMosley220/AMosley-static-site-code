@@ -40,7 +40,7 @@ jobs:
 
           # 2. Example: Copy a build folder or specific file from source to destination-folder
           # Modify this line based on what files you need to copy
-          cp -r public/* destination-folder/
+          cp -r ./public destination-folder/
 
           # 3. Navigate to destination folder and push
           cd destination-folder
