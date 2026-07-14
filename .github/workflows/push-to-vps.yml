@@ -12,6 +12,21 @@ jobs:
         concurrency:
           group: ${{ github.workflow }}-${{ github.ref }}
         steps:
+          - name: Checkout Repo
+            uses: actions/checkout@v4
+            with:
+              submodules: true  # Fetch Hugo themes (true OR recursive)
+              fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
+
+          - name: Setup Hugo
+            uses: peaceiris/actions-hugo@v3
+            with:
+              hugo-version: '0.164.0'
+              extended: true
+          
+          - name: Build Hugo
+            run: hugo
+
           - name: Install Hetzner Cloud CLI
             uses: hetznercloud/setup-hcloud@v2
   
@@ -19,37 +34,23 @@ jobs:
             id: ip
             uses: candidob/get-runner-ip@v1.0.0
 
-          - name: See IP Addresses
-            run: |
-              echo ${{ steps.ip.outputs.ipv4 }}
-
-          - name: List hcloud firewalls
-            run: hcloud firewall list
-            env:
-              HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
-
           - name: Add current runner IP to hcloud firewall
             run: hcloud firewall add-rule --direction in --source-ips ${{ steps.ip.outputs.ipv4 }}/32 --protocol tcp --port 2222 static-site-firewall
             env:
               HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
 
-          - name: Check firewall rules
-            run: hcloud firewall describe -o json static-site-firewall
-            env:
-              HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
+          - name: Copy public folder to vps
+            uses: pierrickdelrieu/scp-action@v0.1.0
+            with:
+              host: ${{ secrets.REMOTE_HOST }}
+              ssh_port: 2222
+              ssh_username: ${{ secrets.REMOTE_USER }}
+              ssh_key: ${{ secrets.HETZNER_SSH_KEY }}
+              source_dir: './public'
+              destination_dir: ${{ secrets.REMOTE_PATH }}
+              rm: true
 
           - name: Remove firewall rule
             run: hcloud firewall delete-rule --direction in --source-ips ${{ steps.ip.outputs.ipv4 }}/32 --protocol tcp --port 2222 static-site-firewall
             env:
-              HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
-        #  - name: Execute git clone on Remote Server
-        #    uses: appleboy/ssh-action@v1.0.3
-        #    with:
-        #      host: ${{ secrets.REMOTE_HOST }}
-        #      username: ${{ secrets.REMOTE_USER }}
-        #      key: ${{ secrets.HETZNER_SSH_KEY }}
-        #      port: 2222
-        #     # - uses: actions/checkout@v4
-            #   with:
-            #     submodules: true  # Fetch Hugo themes (true OR recursive)
-            #     fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
+              HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }} 
