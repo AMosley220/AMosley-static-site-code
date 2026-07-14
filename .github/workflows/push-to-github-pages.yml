@@ -1,0 +1,29 @@
+name: Sync Dev to Github Pages
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  push-to-main:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Dev Branch
+        uses: actions/checkout@v4
+        with:
+          ref: dev
+
+      - name: Push to Target Main Branch
+        env:
+          TARGET_TOKEN: ${{ secrets.SYNC_TOKEN }}
+        run: |
+          # Configure Git metadata
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Add the target repository as a new remote using the token for auth
+          git remote add target-repo "https://oauth2:${TARGET_TOKEN}@://github.com"
+
+          # Force push the current dev branch directly into the remote main branch
+          git push target-repo dev:main --force
