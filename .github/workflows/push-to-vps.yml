@@ -40,7 +40,7 @@ jobs:
               HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
 
           - name: Copy public folder to vps
-            uses: pierrickdelrieu/scp-action@v0.1.0
+            uses: pierrickdelrieu/scp-action@v0.1.2
             with:
               host: ${{ secrets.REMOTE_HOST }}
               ssh_port: 2222
