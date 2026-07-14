@@ -31,7 +31,8 @@ jobs:
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
          # 2. Copy static-site-repo to github-pages-repo and commit it to main
-          cp -r ./static-site-repo github-pages-repo/
+          ls -l ./static-site-repo
+          cp -r ./static-site-repo/ github-pages-repo/
 
          # 3. Navigate to destination folder and push
           cd github-pages-repo
