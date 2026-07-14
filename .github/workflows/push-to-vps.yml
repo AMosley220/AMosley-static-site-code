@@ -34,7 +34,7 @@ jobs:
               HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
 
           - name: Check firewall rules
-            run: hcloud firewall describe -o static-site-firewall
+            run: hcloud firewall describe -o json static-site-firewall
             env:
               HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
 
