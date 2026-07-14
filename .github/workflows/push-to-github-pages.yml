@@ -13,17 +13,37 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: dev
+          submodules: recursive
+          fetch-depth: 0
+          path: 'static-site-repo'
 
-      - name: Push to Target Main Branch
-        env:
-          TARGET_TOKEN: ${{ secrets.SYNC_TOKEN }}
+      # Step 2: Check out the target repository into a subdirectory
+      - name: Checkout Destination Repo
+        uses: actions/checkout@v4
+        with:
+          repository: 'AMosley220/amosley220.github.io' # Replace with target repo details
+          token: ${{ secrets.SYNC_TOKEN }}
+          path: 'github-pages-repo' # Clones the target repo into this folder
+
+      # Step 3: Copy/generate files and push
+      - name: Copy files and Push to Destination
         run: |
-          # Configure Git metadata
+         # 1. Setup git configuration
           git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          # Add the target repository as a new remote using the token for auth
-          git remote add target-repo "https://oauth2:${TARGET_TOKEN}@://github.com"
+         # 2. Copy static-site-repo to github-pages-repo and commit it to main
+          ls -l ./static-site-repo
+          cp -r ./static-site-repo/* github-pages-repo/
 
-          # Force push the current dev branch directly into the remote main branch
-          git push target-repo dev:main --force
+         # 3. Navigate to destination folder and push
+          cd github-pages-repo
+          git add .
+
+         # 4. Only commit and push if there are changes to avoid workflow errors
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "Automated sync from source repo: ${{ github.sha }}"
+            git push origin main
+          else
+            echo "No changes to commit"
+          fi

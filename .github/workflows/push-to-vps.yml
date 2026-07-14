@@ -12,7 +12,30 @@ jobs:
         concurrency:
           group: ${{ github.workflow }}-${{ github.ref }}
         steps:
-            - uses: actions/checkout@v4
-              with:
-                submodules: true  # Fetch Hugo themes (true OR recursive)
-                fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
+          - name: Install Hetzner Cloud CLI
+            uses: hetznercloud/setup-hcloud@v2
+  
+          - name: Get IP Addresses
+            id: ip
+            uses: candidob/get-runner-ip@v1.0.0
+          
+          - name: List hcloud firewalls
+            run: hcloud firewall list
+            env:
+              HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
+          
+          - name: See IP Addresses
+            run: |
+              echo ${{ steps.ip.outputs.ipv4 }}
+
+        #  - name: Execute git clone on Remote Server
+        #    uses: appleboy/ssh-action@v1.0.3
+        #    with:
+        #      host: ${{ secrets.REMOTE_HOST }}
+        #      username: ${{ secrets.REMOTE_USER }}
+        #      key: ${{ secrets.HETZNER_SSH_KEY }}
+        #      port: 2222
+        #     # - uses: actions/checkout@v4
+            #   with:
+            #     submodules: true  # Fetch Hugo themes (true OR recursive)
+            #     fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
