@@ -26,20 +26,18 @@ jobs:
       # Step 3: Copy/generate files and push
       - name: Copy files and Push to Destination
         run: |
-          # 1. Setup git configuration
+         # 1. Setup git configuration
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          # 2. Copy static-site-repo to github-pages-repo and commit it to main
-          # Modify this line based on what files you need to copy
-          ls -l
-          cp -r ./static-site-repo ./github-pages-repo/
+         # 2. Copy static-site-repo to github-pages-repo and commit it to main
+          cp -r ./static-site-repo github-pages-repo/
 
-        # # 3. Navigate to destination folder and push
+         # 3. Navigate to destination folder and push
           cd github-pages-repo
           git add .
 
-        # 4. Only commit and push if there are changes to avoid workflow errors
+         # 4. Only commit and push if there are changes to avoid workflow errors
           if ! git diff-index --quiet HEAD; then
             git commit -m "Automated sync from source repo: ${{ github.sha }}"
             git push origin main
