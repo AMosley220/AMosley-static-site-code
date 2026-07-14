@@ -18,16 +18,30 @@ jobs:
           - name: Get IP Addresses
             id: ip
             uses: candidob/get-runner-ip@v1.0.0
-          
-          - name: List hcloud firewalls
-            run: hcloud firewall list
-            env:
-              HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
-          
+
           - name: See IP Addresses
             run: |
               echo ${{ steps.ip.outputs.ipv4 }}
 
+          - name: List hcloud firewalls
+            run: hcloud firewall list
+            env:
+              HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
+
+          - name: Add current runner IP to hcloud firewall
+            run: hcloud firewall add-rule --direction in --source-ips ${{ steps.ip.outputs.ipv4 }} --protocol tcp --port 2222 static-site-firewall
+            env:
+              HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
+
+          - name: Check firewall rules
+            run: hcloud firewall describe -o static-site-firewall
+            env:
+              HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
+
+          - name: Remove firewall rule
+            run: hcloud firewall delete-rule --direction in --source-ips ${{ steps.ip.outputs.ipv4 }} --protocol tcp --port 2222 static-site-firewall
+            env:
+              HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
         #  - name: Execute git clone on Remote Server
         #    uses: appleboy/ssh-action@v1.0.3
         #    with:
