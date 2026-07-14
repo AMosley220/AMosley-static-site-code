@@ -32,7 +32,7 @@ jobs:
 
          # 2. Copy static-site-repo to github-pages-repo and commit it to main
           ls -l ./static-site-repo
-          cp -r ./static-site-repo/ github-pages-repo/
+          cp -r ./static-site-repo/* github-pages-repo/
 
          # 3. Navigate to destination folder and push
           cd github-pages-repo
