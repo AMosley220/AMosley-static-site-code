@@ -14,16 +14,42 @@ jobs:
         with:
           ref: dev
 
-      - name: Push to Target Main Branch
-        env:
-          TARGET_TOKEN: ${{ secrets.SYNC_TOKEN }}
+      # Step 2: Check out the target repository into a subdirectory
+      - name: Checkout Destination Repo
+        uses: actions/checkout@v4
+        with:
+          repository: 'AMosley220/amosley220.github.io' # Replace with target repo details
+          token: ${{ secrets.SYNC_TOKEN }}
+          path: 'destination-folder' # Clones the target repo into this folder
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: '0.164.0'
+          extended: true
+
+      - name: Build
+        run: hugo
+
+      # Step 3: Copy/generate files and push
+      - name: Copy files and Push to Destination
         run: |
-          # Configure Git metadata
+          # 1. Setup git configuration
           git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          # Add the target repository as a new remote using the token for auth
-          git remote add target-repo "https://oauth2:${TARGET_TOKEN}@://github.com"
+          # 2. Example: Copy a build folder or specific file from source to destination-folder
+          # Modify this line based on what files you need to copy
+          cp -r public/* destination-folder/
 
-          # Force push the current dev branch directly into the remote main branch
-          git push target-repo dev:main --force
+          # 3. Navigate to destination folder and push
+          cd destination-folder
+          git add .
+
+          # 4. Only commit and push if there are changes to avoid workflow errors
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "Automated sync from source repo: ${{ github.sha }}"
+            git push origin main
+          else
+            echo "No changes to commit"
+          fi
